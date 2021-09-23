@@ -22,7 +22,7 @@ class Parser:
     EVENT_SUMMARY      = "SUMMARY:"
 
     EVENT_DESC_END     = ["LAST-MODIFIED:","LOCATION:","SEQUENCE:","STATUS:","SUMMARY:"]
-    EVENT_DATA_REMAINS = "\n\nî¡¸\n\n\nOrganiser: News Blocks"
+    EVENT_DATA_REMAINS = "\\n\\nî¡¸\\n\\n\\nOrganiser: News Blocks"
     
     # Will hold event objects before they are sent to a file
     EVENT_LIST = []
@@ -91,7 +91,7 @@ class Parser:
             if(self.EVENT_BLOCK_END in line and eventFound):
                 eventFound = False
                 # Create event object
-                temp = Event(tempSum,tempDesc,tempStartTime,tempEndTime)
+                temp = Event(tempSum,tempDesc.replace(self.EVENT_DATA_REMAINS,''),tempStartTime,tempEndTime)
                 # Push event to list
                 self.EVENT_LIST.append(temp)
                 continue 
@@ -102,7 +102,6 @@ class Parser:
             print(evnt.description)
             print(evnt.startTime)
             print(evnt.endTime)          
-            print("---------")
 p = Parser()
 p.parseFile()
 p.viewEvents()
