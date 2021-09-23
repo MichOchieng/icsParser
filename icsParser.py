@@ -26,6 +26,13 @@ class Parser:
 
     PARSED_FILENAME = "PARSED" + sys.argv[1]
 
+    def parseDateTime(self,dateTime):
+        # Could be implemented with datetime
+        parsedYear  = dateTime[:4] + '-' + dateTime[4:4]
+        parsedMonth = dateTime[4:6] + '-'
+        parsedDay   = dateTime[6:8] + ' '
+        parsedTime  = dateTime[8:10] + ':' + dateTime[10:12] + ':' + dateTime[12:14]
+        return parsedYear + parsedMonth + parsedDay + parsedTime
 
     def parseFile(self):
         # Takes in file as a command line argument
@@ -48,13 +55,13 @@ class Parser:
             if(self.EVENT_START_TIME in line and eventFound):
                 # Strip date/time from string
                 time = re.sub('[^0-9]','',line)
-                print(time)
+                print(self.parseDateTime(time))
                 continue
             # Get event end time
             if(self.EVENT_END_TIME in line and eventFound):
                 # Strip date/time from string
                 time = re.sub('[^0-9]','',line)
-                print(time)
+                print(self.parseDateTime(time))
                 continue
             # Get event description
             if(self.EVENT_DESCRIPTION in line and eventFound):
