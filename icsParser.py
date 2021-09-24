@@ -99,12 +99,13 @@ class Parser:
     def printEvents(self):
         with open('PARSED'+sys.argv[1],'w') as file:
             sys.stdout = file
-            for evnt in self.EVENT_LIST:
-                print("---------")
+            for i,evnt in enumerate(self.EVENT_LIST):
+                print("EVENT " + str(i))
                 print(evnt.name)  
                 print(evnt.description)
                 print(evnt.startTime)
-                print(evnt.endTime)        
+                print(evnt.endTime)    
+                print("\n")    
 p = Parser()
 p.parseFile()
 p.printEvents()
