@@ -42,7 +42,7 @@ class Parser:
         self.fileName = sys.argv[1]
         # Takes in file as a command line argument
         try: 
-            with open(self.fileName,"r") as file:
+            with open(self.fileName,"r",encoding='utf-8',errors='ignore') as file:
                 lines = file.readlines()
         except OSError:
             print("Could not open file " + self.fileName + ".")
@@ -104,7 +104,7 @@ class Parser:
     # This will print the encapsulated events to a new file
     def printEvents(self):
         try:
-            with open('PARSED' + self.fileName,'w') as file:
+            with open('PARSED' + self.fileName,'w',encoding='utf-8',errors='ignore') as file:
                 sys.stdout = file
                 for i,evnt in enumerate(self.EVENT_LIST):
                     print("EVENT " + str(i+1))
