@@ -94,14 +94,17 @@ class Parser:
                 temp = Event(tempSum,tempDesc.replace(self.EVENT_DATA_REMAINS,''),tempStartTime,tempEndTime)
                 # Push event to list
                 self.EVENT_LIST.append(temp)
-                continue 
-    def viewEvents(self):
-        for evnt in self.EVENT_LIST:
-            print("---------")
-            print(evnt.name)  
-            print(evnt.description)
-            print(evnt.startTime)
-            print(evnt.endTime)          
+                continue   
+    # This will print the encapsulated events to a new file
+    def printEvents(self):
+        with open('PARSED'+sys.argv[1],'w') as file:
+            sys.stdout = file
+            for evnt in self.EVENT_LIST:
+                print("---------")
+                print(evnt.name)  
+                print(evnt.description)
+                print(evnt.startTime)
+                print(evnt.endTime)        
 p = Parser()
 p.parseFile()
-p.viewEvents()
+p.printEvents()
