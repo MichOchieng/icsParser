@@ -10,13 +10,14 @@ class Event:
         self.endTime     = endTime
 
 class Parser:
+    fileName = ""
+
     # Constants used for identifying calendar event attributes
-    
     EVENT_BLOCK_START  = "BEGIN:VEVENT"
     EVENT_BLOCK_END    = "END:VEVENT"
 
-    EVENT_START_TIME   = "DTSTART;"
-    EVENT_END_TIME     = "DTEND;"
+    EVENT_START_TIME   = ["DTSTART;","DTSTART:"]
+    EVENT_END_TIME     = ["DTEND;","DTEND:"]
 
     EVENT_DESCRIPTION  = "DESCRIPTION:"
     EVENT_SUMMARY      = "SUMMARY:"
@@ -38,9 +39,14 @@ class Parser:
         return parsedYear + parsedMonth + parsedDay + parsedTime
 
     def parseFile(self):
+        self.fileName = sys.argv[1]
         # Takes in file as a command line argument
-        with open(sys.argv[1],"r") as file:
-            lines = file.readlines()
+        try: 
+            with open(self.fileName,"r") as file:
+                lines = file.readlines()
+        except OSError:
+            print("Could not open file " + self.fileName + ".")
+            sys.exit()
 
         eventFound  = False
         readingDesc = False # Allows the full description to be parsed if it spans multiple lines
@@ -57,14 +63,14 @@ class Parser:
                 continue
 
             # Get event start time
-            if(self.EVENT_START_TIME in line and eventFound):
+            if(any(identifier in line for identifier in self.EVENT_START_TIME) and eventFound):
                 # Strip date/time from string
                 time = re.sub('[^0-9]','',line)
                 tempStartTime = self.parseDateTime(time)
                 continue
 
             # Get event end time
-            if(self.EVENT_END_TIME in line and eventFound):
+            if(any(identifier in line for identifier in self.EVENT_END_TIME) and eventFound):
                 # Strip date/time from string
                 time = re.sub('[^0-9]','',line)
                 tempEndTime = self.parseDateTime(time)
@@ -97,15 +103,18 @@ class Parser:
                 continue   
     # This will print the encapsulated events to a new file
     def printEvents(self):
-        with open('PARSED'+sys.argv[1],'w') as file:
-            sys.stdout = file
-            for i,evnt in enumerate(self.EVENT_LIST):
-                print("EVENT " + str(i))
-                print(evnt.name)  
-                print(evnt.description)
-                print(evnt.startTime)
-                print(evnt.endTime)    
-                print("\n")    
+        try:
+            with open('PARSED' + self.fileName,'w') as file:
+                sys.stdout = file
+                for i,evnt in enumerate(self.EVENT_LIST):
+                    print("EVENT " + str(i+1))
+                    print(evnt.name)  
+                    print(evnt.description)
+                    print(evnt.startTime)
+                    print(evnt.endTime)    
+                    print("\n")    
+        except OSError:
+            print("Something went wrong writing to parse file!")
 p = Parser()
 p.parseFile()
 p.printEvents()
