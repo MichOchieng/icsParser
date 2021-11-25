@@ -1,7 +1,9 @@
 // ----------- Main Contents -----------
 
 // Constants
-    const myFile = "example.txt";
+    var file = File('~/Documents/icsParser/scripts/example.txt');
+    file.open('r');
+    var text = file.read();
 
 // File creation and document setup
     if(!app.homeScreenVisible){
@@ -9,9 +11,15 @@
         app.activeDocument.close(SaveOptions.DONOTSAVECHANGES); // Temporary, closes previous document window on load
     }
     var myDoc    = app.documents.add();
-    var text     = "test";
+
+    if (text != '') {
+        alert(text);
+    }
+    else{
+        alert("File is empty");
+    }
     myDoc.layers[0].name = "Background Layer";
-    
+
 // Render Schedule elements
   
     // Add text
@@ -22,6 +30,10 @@
 
 
 // ----------- Functions -----------
+
+    function name(params) {
+        
+    }
 
     function addText(text){
         var doc       = app.activeDocument;
