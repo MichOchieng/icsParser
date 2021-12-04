@@ -73,32 +73,6 @@
         }
     }
 
-    function drawTextContainer(){
-        var doc           = app.activeDocument;
-        var rectangle     = doc.pathItems.add();
-        rectangle.stroked = true;
-        // Draws a rectangle by connecting the points bellow
-        rectangle.setEntirePath(
-            [
-                [
-                    71.69,719  // Bottom left corner
-                ],
-                [
-                    540.31,719 // Bottom right corner
-                ],
-                [
-                    540.31,73  // Top left corner
-                ],
-                [
-                    71.69,73   // Top right corner
-                ],
-                [
-                    71.69,719  // Bottom left corner
-                ]
-            ]
-        )
-    }
-
     function addText(text,eventNum){
         var doc       = app.activeDocument;
         var txtFrame  = doc.textFrames.add();
