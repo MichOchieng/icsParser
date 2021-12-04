@@ -16,15 +16,62 @@
     myDoc.layers[0].name = "Background Layer";
 
 // Render Schedule elements
-    // Add text
-    drawTextContainer();
-    addText("test","1");
+    drawGridLines(36,10,576,10,24,20,0);
+    drawGridLines(36,10,36,740,6,72,1);
 
     // Save
     myDoc.exportFile(File('~/Documents/scripts/schedule.png'),ExportType.PNG24);
 
 
 // ----------- Functions -----------
+
+    function drawGridLines(initialX,initialY,initialX2,initialY2,maxLine,offset,axis){
+        // Variables
+            // initial(X,Y): Starting coordinate position for the first line in the loop
+            // maxLine: The maximum numberof lines being generated
+            // offset: Determines how the lines are spaced
+            // axis: A value of 0 will result in the x axis being generated while 1 generates the y
+
+        var doc = app.activeDocument;
+
+        // Draws grid lines from the given start location
+        for (var index = 0; index < maxLine; index++) {
+            var line     = doc.pathItems.add();
+            line.stroked = true;
+            if (axis == 0) {
+                line.name    = 'xLine' + index;
+                // Creates a single line with the given coordinates 
+                line.setEntirePath(
+                    [
+                        [
+                            initialX,(initialY + offset)
+                        ],
+                        [
+                            initialX2,(initialY2 + offset)
+                        ]
+                    ]
+                )
+                offset+=30;
+            }
+            else if (axis == 1) {
+                line.name    = 'yLine' + index;
+                // Creates a single line with the given coordinates
+                line.setEntirePath(
+                    [
+                        [
+                            (initialX + offset),initialY
+                        ],
+                        [
+                            (initialX2 + offset),initialY2
+                        ]
+                    ]
+                )
+                offset+=81;
+            }else{
+                alert("Incorrect input for axis variable in drawGridLines function!")
+            }
+        }
+    }
 
     function drawTextContainer(){
         var doc           = app.activeDocument;
