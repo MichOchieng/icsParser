@@ -16,17 +16,23 @@
     myDoc.layers[0].name = "Background Layer";
 
 // Render Schedule elements
+    // Grid
     drawGridLines(36,10,576,10,24,20,0);
     drawGridLines(36,10,36,740,6,72,1);
+    // Schedule Times
+    addTimes(50,20,0);
+    // Days of the Week
 
-    // Save
+    // Schedule Content
+
+    // Save PNG
     myDoc.exportFile(File('~/Documents/scripts/schedule.png'),ExportType.PNG24);
 
 
 // ----------- Functions -----------
 
     function drawGridLines(initialX,initialY,initialX2,initialY2,maxLine,offset,axis){
-        // Variables
+        // Params
             // initial(X,Y): Starting coordinate position for the first line in the loop
             // maxLine: The maximum numberof lines being generated
             // offset: Determines how the lines are spaced
@@ -73,17 +79,22 @@
         }
     }
 
-    function addText(text,eventNum){
+    function addTimes(initialX,initialY,offset){
+        for (var index = 0; index < 25; index++) {
+            addText(initialX,initialY + offset);
+            offset+=30;
+        }
+    }
+    
+    function addText(posX,posY){
         var doc       = app.activeDocument;
         var txtFrame  = doc.textFrames.add();
         var txtRange  = txtFrame.textRange;
         // Input file contents
-        txtFrame.contents = text; // DONT FORGET 's' AT THE END OF CONTENTS!!!
-        txtFrame.name    = "scheduleEvent" + eventNum;
-        txtRange.size    = 14; // Should scale to # of events
-        txtFrame.position = [ // Should be scalable
-            (75.69),
-            (724)
+        txtFrame.contents = "text"; // DONT FORGET 's' AT THE END OF CONTENTS!!!
+        txtRange.size    = 14;
+        txtFrame.position = [
+            posX,
+            posY
         ]
-        
     }
