@@ -4,32 +4,46 @@
     var file = File('~/Documents/icsParser/scripts/example.txt');
     file.open('r');
 
-// File creation and document setup
-    if(!app.homeScreenVisible){
-        // Overwrite
-        app.activeDocument.close(SaveOptions.DONOTSAVECHANGES); // Temporary, closes previous document window on load
-    }
-    var myDoc    = app.documents.add();
-    //for (var index = 0; index < 4; index++) {
-        //alert(file.readln());
-    //}
-    myDoc.layers[0].name = "Background Layer";
+// Open calendar file
+    var filePath = "~/Documents/cfur/adobeScripts/icsParser/scripts/timeTableTest.ai"; // Replace with correct path on your machine
+    var file = File(filePath);
+    file.open('r');
+    app.open(file);
 
-// Render Schedule elements
-    // Grid
-    drawGridLines(36,10,576,10,24,20,0);
-    drawGridLines(36,10,36,740,6,72,1);
-    // Schedule Times
-    addTimes(50,20,0);
-    // Days of the Week
+// Add text to calendar file
+    fillSchedule();
 
-    // Schedule Content
-
-    // Save PNG
-    myDoc.exportFile(File('~/Documents/scripts/schedule.png'),ExportType.PNG24);
+// Save PNG of Schedule
+    //myDoc.exportFile(File('testSchedule.png'),ExportType.PNG24);
 
 
 // ----------- Functions -----------
+    // Currently only adds boilerplate text
+    function fillSchedule(){
+        for (var i = 0; i < 7; i++) {  // Row
+
+            for (var j = 0; j < 24; j++) {   // Column
+                var doc = app.activeDocument; // Targets the opened file as the working document
+                var txtFrame = doc.textFrames.add();
+                var txtRange = txtFrame.textRange;
+        
+                var posX     = 127;
+                var posY     = -156; // Negative because Y values are flipped in illustrator
+                var offSetY  = 14.2;
+                var offsetX  = 63;
+        
+                txtFrame.contents = "text"; // DONT FORGET 's' AT THE END OF CONTENTS!!!
+                txtRange.size    = 8;
+                txtFrame.position = [
+                    (posX + (i*offsetX)), // Offsets used to place in the correct row
+                    (posY - (j*offSetY))  // Subtracting from posY due to flipped values
+                ];   
+                // Center align text in frame
+                // Must go after setting position otherwise wont work
+                txtRange.justification = Justification.CENTER;
+            }
+        }
+    }
 
     function drawGridLines(initialX,initialY,initialX2,initialY2,maxLine,offset,axis){
         // Params
