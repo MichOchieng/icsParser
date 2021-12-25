@@ -3,9 +3,8 @@ import re
 
 class Event:
     # Will be used to encapsulate event data from the parser class
-    def __init__(self,name,description,startTime,endTime):
+    def __init__(self,name,startTime,endTime):
         self.name        = name
-        self.description = description
         self.startTime   = startTime
         self.endTime     = endTime
 
@@ -19,7 +18,6 @@ class Parser:
     EVENT_START_TIME   = ["DTSTART;","DTSTART:"]
     EVENT_END_TIME     = ["DTEND;","DTEND:"]
 
-    EVENT_DESCRIPTION  = "DESCRIPTION:"
     EVENT_SUMMARY      = "SUMMARY:"
 
     EVENT_DESC_END     = ["LAST-MODIFIED:","LOCATION:","SEQUENCE:","STATUS:","SUMMARY:"]
@@ -49,12 +47,10 @@ class Parser:
             sys.exit()
 
         eventFound  = False
-        readingDesc = False # Allows the full description to be parsed if it spans multiple lines
 
         # Temporary values used to create event objects at the end of for loop
         tempStartTime = ''
         tempEndTime   = ''
-        tempDesc      = ''
         tempSum       = ''
         for line in lines:
             # Find an Event
@@ -76,18 +72,7 @@ class Parser:
                 tempEndTime = self.parseDateTime(time)
                 continue
 
-            # Get event description
-            if(self.EVENT_DESCRIPTION in line and eventFound):
-                readingDesc = True
-                desc = line.replace(self.EVENT_DESCRIPTION,'')
-                tempDesc = desc.replace('\\n','')
-                continue
-            
-            # Stops unwanted event attributes after the description from being saved to event object
-            if(readingDesc and eventFound and not any(identifier in line for identifier in self.EVENT_DESC_END )):
-                tempDesc += line.replace('\n','')
-
-            # Get event summary
+            # Get event summary/name
             if(self.EVENT_SUMMARY in line and eventFound):
                 readingDesc = False
                 # tempSum = re.sub('[^a-zA-Z ]','',(line.replace(self.EVENT_SUMMARY,''))) will only display alphabetical characters and spaces
@@ -97,7 +82,7 @@ class Parser:
             if(self.EVENT_BLOCK_END in line and eventFound):
                 eventFound = False
                 # Create event object
-                temp = Event(tempSum,tempDesc.replace(self.EVENT_DATA_REMAINS,''),tempStartTime,tempEndTime)
+                temp = Event(tempSum,tempStartTime,tempEndTime)
                 # Push event to list
                 self.EVENT_LIST.append(temp)
                 continue   
@@ -109,7 +94,6 @@ class Parser:
                 for i,evnt in enumerate(self.EVENT_LIST):
                     print("EVENT " + str(i+1))
                     print(evnt.name)  
-                    print(evnt.description)
                     print(evnt.startTime)
                     print(evnt.endTime)    
                     print("\n")    
