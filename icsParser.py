@@ -32,14 +32,6 @@ class Parser:
 
     PARSED_FILENAME = "PARSED" + sys.argv[1]
 
-    def parseTime(self,dateTime):
-        # Could be implemented with datetime
-        # parsedYear  = dateTime[:4] + '-' + dateTime[4:4]
-        # parsedMonth = dateTime[4:6] + '-'
-        # parsedDay   = dateTime[6:8] + ' '
-        parsedTime  = dateTime[8:10] + ':' + dateTime[10:12] + ':' + dateTime[12:14]
-        return parsedTime
-
     def parseFile(self):
         self.fileName = sys.argv[1]
         # Takes in file as a command line argument
@@ -67,7 +59,7 @@ class Parser:
             if(any(identifier in line for identifier in self.EVENT_START_TIME) and eventFound):
                 # Strip date/time from string
                 time = re.sub('[^0-9]','',line)
-                tempStartTime = self.parseTime(time)
+                tempStartTime = time[8:10]
                 continue
 
             # Get event end time
@@ -76,7 +68,7 @@ class Parser:
                 time = re.sub('[^0-9]','',line)
                 # This grabs the numerical YYYY/MM/DD value as a str and saves it as an integer to be used later for cleaning the eventList
                 tempRawTime = int(time[0:8:])
-                tempEndTime = self.parseTime(time)
+                tempEndTime = time[8:10]
                 continue
 
             # Get event summary/name
@@ -106,7 +98,7 @@ class Parser:
                                     )
                             )
         for i,evnt in enumerate(self.EVENT_LIST):
-            if(currentDateTime <= evnt.rawDate):
+            if(20211201 <= evnt.rawDate):
                 self.CLEAN_EVENT_LIST.append(evnt)
 
     # This will print the encapsulated events to a new file
