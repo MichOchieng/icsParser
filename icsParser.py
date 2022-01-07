@@ -85,20 +85,30 @@ class Parser:
                 continue
 
             # Get info on Recurance Rules
-            if(any(identifier in line for identifier in self.RRULE) and eventFound):
+            if((self.RRULE in line) and eventFound):
                 # Get the day of the event
                 tempRRDAY = self.getRruleDay(line)
                 # Get frequency
-                if(any(identifier in line for identifier in "FREQ=WEEKLY")):
+                if("FREQ=WEEKLY" in line):
                     tempFreq  = "WEEKLY"
                     # Get datetime and convert into an int of the event
                     if(any(identifier in line for identifier in self.RRULE_DAYS)):
-                        tempRREND = re.sub('[^0-9]','',line)
-                elif(any(identifier in line for identifier in "FREQ=DAILY")):
+                        temp = re.sub('[^0-9]','',line)[0:8:]
+                        # Fixes int casting issue
+                        if(temp != ''):
+                            tempRREND = int(temp)
+                        else:
+                            tempRREND = temp
+                elif("FREQ=DAILY" in line):
                     tempFreq  = "DAILY"
                     # Get datetime and convert into an int of the event
                     if(any(identifier in line for identifier in self.RRULE_DAYS)):
-                        tempRREND = re.sub('[^0-9]','',line)
+                        temp = re.sub('[^0-9]','',line)[0:8:]
+                        # Fixes int casting issue
+                        if(temp != ''):
+                            tempRREND = int(temp)
+                        else:
+                            tempRREND = temp
                     continue
 
             # Get event summary/name
@@ -117,20 +127,20 @@ class Parser:
                 continue   
 
     def getRruleDay(self,line):
-        # Not ideal
-        if(any(identifier in line for identifier in "BYDAY=MO")):
+        # Not Ideal
+        if re.search(r'\b' + "BYDAY=MO" + r'\b',line):
             return "BYDAY=MO"
-        elif(any(identifier in line for identifier in "BYDAY=TU")):
+        elif re.search(r'\b' + "BYDAY=TU" + r'\b',line):
             return "BYDAY=TU"
-        elif(any(identifier in line for identifier in "BYDAY=WE")):
+        elif re.search(r'\b' + "BYDAY=WE"+ r'\b',line):
             return "BYDAY=WE"
-        elif(any(identifier in line for identifier in "BYDAY=TH")):
+        elif re.search(r'\b' + "BYDAY=TH"+ r'\b',line):
             return "BYDAY=TH"
-        elif(any(identifier in line for identifier in "BYDAY=FR")):
+        elif re.search(r'\b' + "BYDAY=FR"+ r'\b',line):
             return "BYDAY=FR"
-        elif(any(identifier in line for identifier in "BYDAY=SA")):
+        elif re.search(r'\b' + "BYDAY=SA"+ r'\b',line):
             return "BYDAY=SA"
-        elif(any(identifier in line for identifier in "BYDAY=SU")):
+        elif re.search(r'\b' + "BYDAY=SU"+ r'\b',line):
             return "BYDAY=SU"
     
     # This will create a new event list with only newer events
@@ -138,16 +148,11 @@ class Parser:
         # Loop through EVENT_LIST
             # If an event has a start datetime older than the current datetime
                 # Check to see if it's a reccuring event that was created earlier than today
-                    # If it is a recurring event
-                        # Check to see if there is a stopping date
-                            # If there is and it's not older than today
-                                # Add to new event list 
-                            # If there is and it's older than today
-                                # Don't add to the new list
-                            # Otherwise
-                                # Add to new event list   
-                    # Else
-                        # Don't add to new event list
+                    # Check to see if there is a stopping date
+                        # If there is and it's not older than today
+                            # Add to new event list 
+                        # If there is and it's older than today
+                            # Don't add to the new list 
             # Otherwise just add to the new event list
 
         # Gets the current datetime then removes non-numeric values and saves the result as an integer value
@@ -156,9 +161,16 @@ class Parser:
                                         '[^0-9]','',datetime.today().strftime('%Y-%m-%d')
                                     )
                             )
+
         for i,evnt in enumerate(self.EVENT_LIST):
+            # 20211201 is used for debugging should be the currentDateTime var
             if(20211201 <= evnt.rawDate):
                 self.CLEAN_EVENT_LIST.append(evnt)
+            # If the event is 'older' than todays date
+            elif(20211201 > evnt.rawDate):
+                # Check to see if the stopping date exists and is older than today as well
+                if(evnt.rruleEnd != '' and (20211201 <= evnt.rruleEnd)):
+                    self.CLEAN_EVENT_LIST.append(evnt)
 
     # This will print the encapsulated events to a new file
     def printEvents(self):
@@ -168,7 +180,7 @@ class Parser:
             with open('PARSED' + self.fileName,'w',encoding='utf-8',errors='ignore') as file:
                 sys.stdout = file
                 for i,evnt in enumerate(self.CLEAN_EVENT_LIST):
-                    print("~~~EVENT~~~")
+                    print("-----EVENT " + str(i))
                     print(evnt.name)  
                     print(evnt.startTime)
                     print(evnt.endTime) 
