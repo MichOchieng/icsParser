@@ -183,10 +183,7 @@ class Parser:
                     print("-----EVENT " + str(i))
                     print(evnt.name)  
                     print(evnt.startTime)
-                    print(evnt.endTime) 
                     print(evnt.rawDate)
-                    print(evnt.rruleEnd)
-                    print(evnt.rruleFreq) 
                     print(evnt.rruleDay)
         except OSError:
             print("Something went wrong writing to parse file!")
