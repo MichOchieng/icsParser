@@ -1,8 +1,8 @@
 // ----------- Main Contents -----------
 
 // Constants
-    var file = File('~/Documents/icsParser/scripts/example.txt');
-    file.open('r');
+    var parseFile = File('~/Documents/icsParser/scripts/example.txt');
+    parseFile.open('r');
 
 // Open calendar file
     var filePath = "~/Documents/cfur/adobeScripts/icsParser/scripts/timeTableTest.ai"; // Replace with correct path on your machine
@@ -42,6 +42,33 @@
                 // Must go after setting position otherwise wont work
                 txtRange.justification = Justification.CENTER;
             }
+        }
+    }
+
+    function parseFile(){
+    
+    }
+
+    function convertDay(day){
+    // This will take in the rrule 'BYDAY' value and return an index that will be used
+    // in the schedule matrix
+        switch(day){
+            case "BYDAY=MO":
+                return 0
+            case "BYDAY=TU":
+                return 1
+            case "BYDAY=WE":
+                return 2
+            case "BYDAY=TH":
+                return 3
+            case "BYDAY=FR":
+                return 4
+            case "BYDAY=SA":
+                return 5
+            case "BYDAY=SU":
+                return 6
+            default:
+                alert("Something went wrong coverting dates into indexes.")
         }
     }
 
