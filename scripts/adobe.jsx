@@ -9,16 +9,17 @@
     app.open(file);
 
     // Add text to calendar file
+    fillEventArray();
     fillSchedule();
-    createEventArray();
-
     // Save PNG of Schedule
     // myDoc.exportFile(File('testSchedule.png'),ExportType.PNG24);
 
 
 // ----------- Functions -----------
+
     // Currently only adds boilerplate text
     function fillSchedule(){
+        
         for (var i = 0; i < 7; i++) {  // Colun
 
             for (var j = 0; j < 24; j++) {   // Row
@@ -30,8 +31,19 @@
                 var posY     = -156; // Negative because Y values are flipped in illustrator
                 var offSetY  = 14.2;
                 var offsetX  = 63;
+                
+                var eventName;
+
+                // Need to check for null and undefined values otherwise error 1238 will be thrown
+                if (scheduleArray[i][j] != null) {
+                    eventName = scheduleArray[i][j];
+                } 
+                else{
+                    eventName = ""
+                }
         
-                txtFrame.contents = "text"; // DONT FORGET 's' AT THE END OF CONTENTS!!!
+
+                txtFrame.contents = eventName; // DONT FORGET 's' AT THE END OF CONTENTS!!!
                 txtRange.size     = 8;
                 txtFrame.position = [
                     (posX + (i*offsetX)), // Offsets used to place in the correct row
@@ -39,23 +51,20 @@
                 ];   
                 // Center align text in frame
                 // Must go after setting position otherwise wont work
-                txtRange.justification = Justification.CENTER;
+                //txtRange.justification = Justification.CENTER;
             }
         }
     }
 
     function initializeArray(width,height){
-        var arr = [];
-        for (var index = 0; index < height; index++) {
-            arr[index] = [];
-            for (var j = 0; j < width; j++) {
-                arr[index][j] = "";
-            }
+        var arr = new Array(width);
+        for (var index = 0; index < width; index++) {
+            arr[index] = new Array(height);
         }
         return arr;
     }
 
-    function createEventArray(){
+    function fillEventArray(){
         // Open up incoming file
         try {
             var file = File('~/Documents/cfur/adobeScripts/icsParser/scripts/example.txt');
