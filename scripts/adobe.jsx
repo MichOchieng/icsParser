@@ -1,8 +1,10 @@
 // ----------- Main Contents -----------
 
+    var scheduleArray = initializeArray(7,24)
+
     // Open calendar file
     var filePath = "~/Documents/cfur/adobeScripts/icsParser/scripts/timeTableTest.ai"; // Replace with correct path on your machine
-    var file = File(filePath);
+    var file     = File(filePath);
     file.open('r');
     app.open(file);
 
@@ -20,7 +22,7 @@
         for (var i = 0; i < 7; i++) {  // Colun
 
             for (var j = 0; j < 24; j++) {   // Row
-                var doc = app.activeDocument; // Targets the opened file as the working document
+                var doc      = app.activeDocument; // Targets the opened file as the working document
                 var txtFrame = doc.textFrames.add();
                 var txtRange = txtFrame.textRange;
         
@@ -30,7 +32,7 @@
                 var offsetX  = 63;
         
                 txtFrame.contents = "text"; // DONT FORGET 's' AT THE END OF CONTENTS!!!
-                txtRange.size    = 8;
+                txtRange.size     = 8;
                 txtFrame.position = [
                     (posX + (i*offsetX)), // Offsets used to place in the correct row
                     (posY - (j*offSetY))  // Subtracting from posY due to flipped values
@@ -42,19 +44,62 @@
         }
     }
 
+    function initializeArray(width,height){
+        var arr = [];
+        for (var index = 0; index < height; index++) {
+            arr[index] = [];
+            for (var j = 0; j < width; j++) {
+                arr[index][j] = "";
+            }
+        }
+        return arr;
+    }
+
     function createEventArray(){
         // Open up incoming file
-        var file = File('~/Documents/cfur/adobeScripts/icsParser/scripts/example.txt');
-        file.open('r');
-        var fileContents = file.read()
-        fileContents = fileContents.split("\n") // Makes indexing a lot easier by creating substrings
-        
+        try {
+            var file = File('~/Documents/cfur/adobeScripts/icsParser/scripts/example.txt');
+            file.open('r');
+            var fileContents = file.read();
+            fileContents = fileContents.split("\n"); // Makes indexing a lot easier by creating substrings
+        } catch (error) {
+            alert("An error occured reading input file.");
+            print(error);
+        }
+
         // Loop through file and add events to an array
         //  Pull the startTime, rruleDay and rawDate from each event
         //  The startTime corresponds to the row in the schedule
         //  The rruleDay corresponds to the column in the schedule
+
+        // File structure
+        //  0  - Event Indicator
+        //  1  - Event Name
+        //  2  - Event Start time
+        //  3  - Events date
+        //  4  - Event day
+
+        var tempName;
+        var tempStartTime;
+        var tempDay;
+
         for (var index = 0; index < fileContents.length; index++) {
-            
+            // Check for Event name (index % 5 = 1)
+            if (index % 5 == 1){
+                tempName = fileContents[index]
+            }
+
+            // Check for Event startTime (index % 5 = 2)
+            if (index % 5 == 2) {
+                tempStartTime = fileContents[index]
+            }
+
+            // Check for Event Day (index % 5 = 4)
+            if (index % 5 == 4) {
+                tempDay = convertDay(fileContents[index])
+                // Add Name to correct positon in array
+                scheduleArray[tempDay][tempStartTime] = tempName;
+            }
         }
     }
 
