@@ -1,28 +1,25 @@
 // ----------- Main Contents -----------
 
-// Constants
-    var parseFile = File('~/Documents/icsParser/scripts/example.txt');
-    parseFile.open('r');
-
-// Open calendar file
+    // Open calendar file
     var filePath = "~/Documents/cfur/adobeScripts/icsParser/scripts/timeTableTest.ai"; // Replace with correct path on your machine
     var file = File(filePath);
     file.open('r');
     app.open(file);
 
-// Add text to calendar file
+    // Add text to calendar file
     fillSchedule();
+    createEventArray();
 
-// Save PNG of Schedule
-    //myDoc.exportFile(File('testSchedule.png'),ExportType.PNG24);
+    // Save PNG of Schedule
+    // myDoc.exportFile(File('testSchedule.png'),ExportType.PNG24);
 
 
 // ----------- Functions -----------
     // Currently only adds boilerplate text
     function fillSchedule(){
-        for (var i = 0; i < 7; i++) {  // Row
+        for (var i = 0; i < 7; i++) {  // Colun
 
-            for (var j = 0; j < 24; j++) {   // Column
+            for (var j = 0; j < 24; j++) {   // Row
                 var doc = app.activeDocument; // Targets the opened file as the working document
                 var txtFrame = doc.textFrames.add();
                 var txtRange = txtFrame.textRange;
@@ -45,8 +42,20 @@
         }
     }
 
-    function parseFile(){
-    
+    function createEventArray(){
+        // Open up incoming file
+        var file = File('~/Documents/cfur/adobeScripts/icsParser/scripts/example.txt');
+        file.open('r');
+        var fileContents = file.read()
+        fileContents = fileContents.split("\n") // Makes indexing a lot easier by creating substrings
+        
+        // Loop through file and add events to an array
+        //  Pull the startTime, rruleDay and rawDate from each event
+        //  The startTime corresponds to the row in the schedule
+        //  The rruleDay corresponds to the column in the schedule
+        for (var index = 0; index < fileContents.length; index++) {
+            
+        }
     }
 
     function convertDay(day){
@@ -118,24 +127,4 @@
                 alert("Incorrect input for axis variable in drawGridLines function!")
             }
         }
-    }
-
-    function addTimes(initialX,initialY,offset){
-        for (var index = 0; index < 25; index++) {
-            addText(initialX,initialY + offset);
-            offset+=30;
-        }
-    }
-    
-    function addText(posX,posY){
-        var doc       = app.activeDocument;
-        var txtFrame  = doc.textFrames.add();
-        var txtRange  = txtFrame.textRange;
-        // Input file contents
-        txtFrame.contents = "text"; // DONT FORGET 's' AT THE END OF CONTENTS!!!
-        txtRange.size    = 14;
-        txtFrame.position = [
-            posX,
-            posY
-        ]
     }
