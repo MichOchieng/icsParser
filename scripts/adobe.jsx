@@ -19,15 +19,14 @@
 
     // Currently only adds boilerplate text
     function fillSchedule(){
-        
+        // Text: Sz - 4.2, stroke - 0.25
+        var doc = app.activeDocument; // Targets the opened file as the working document
         for (var i = 0; i < 7; i++) {  // Colun
-
             for (var j = 0; j < 24; j++) {   // Row
-                var doc      = app.activeDocument; // Targets the opened file as the working document
                 var txtFrame = doc.textFrames.add();
                 var txtRange = txtFrame.textRange;
-        
-                var posX     = 127;
+
+                var posX     = 100;
                 var posY     = -156; // Negative because Y values are flipped in illustrator
                 var offSetY  = 14.2;
                 var offsetX  = 63;
@@ -42,16 +41,15 @@
                     eventName = ""
                 }
         
-
                 txtFrame.contents = eventName; // DONT FORGET 's' AT THE END OF CONTENTS!!!
-                txtRange.size     = 8;
+                txtRange.size     = 4.2;
                 txtFrame.position = [
                     (posX + (i*offsetX)), // Offsets used to place in the correct row
                     (posY - (j*offSetY))  // Subtracting from posY due to flipped values
                 ];   
                 // Center align text in frame
                 // Must go after setting position otherwise wont work
-                //txtRange.justification = Justification.CENTER;
+                // txtRange.justification = Justification.CENTER;
             }
         }
     }
@@ -67,7 +65,7 @@
     function fillEventArray(){
         // Open up incoming file
         try {
-            var file = File('~/Documents/cfur/adobeScripts/icsParser/scripts/example.txt');
+            var file = File('~/Documents/cfur/adobeScripts/icsParser/scripts/parseFile.txt');
             file.open('r');
             var fileContents = file.read();
             fileContents = fileContents.split("\n"); // Makes indexing a lot easier by creating substrings
@@ -117,19 +115,19 @@
     // in the schedule matrix
         switch(day){
             case "BYDAY=MO":
-                return 0
-            case "BYDAY=TU":
                 return 1
-            case "BYDAY=WE":
+            case "BYDAY=TU":
                 return 2
-            case "BYDAY=TH":
+            case "BYDAY=WE":
                 return 3
-            case "BYDAY=FR":
+            case "BYDAY=TH":
                 return 4
-            case "BYDAY=SA":
+            case "BYDAY=FR":
                 return 5
-            case "BYDAY=SU":
+            case "BYDAY=SA":
                 return 6
+            case "BYDAY=SU":
+                return 0
             default:
                 alert("Something went wrong coverting dates into indexes.")
         }
