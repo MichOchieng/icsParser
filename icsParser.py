@@ -1,6 +1,7 @@
-from os import times
 import sys
 import re
+import shutil
+import os
 from datetime import datetime
 
 class Event:
@@ -163,8 +164,6 @@ class Parser:
                                     )
                             ) + self.getDate(currentDateTime)
 
-        print(currentDateInt)
-
         for i,evnt in enumerate(self.EVENT_LIST):
             # 20211201 is used for debugging should be the currentDateTime var
             if(currentDateInt <= evnt.rawDate):
@@ -201,7 +200,7 @@ class Parser:
         # Remove old events
         self.cleanList()
         try:
-            with open('parseFile','w',encoding='utf-8',errors='ignore') as file:
+            with open('parseFile.txt','w',encoding='utf-8',errors='ignore') as file:
                 sys.stdout = file
                 for i,evnt in enumerate(self.CLEAN_EVENT_LIST):
                     print("-----EVENT " + str(i+1))
@@ -209,6 +208,8 @@ class Parser:
                     print(evnt.startTime)
                     print(evnt.rawDate)
                     print(evnt.rruleDay)
+                # Moves new parse file to the scripts folder
+                shutil.move("./parseFile.txt","./scripts/parseFile.txt")
         except OSError:
             print("Something went wrong writing to parse file!")
 p = Parser()
