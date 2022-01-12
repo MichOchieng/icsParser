@@ -39,8 +39,6 @@ class Parser:
     EVENT_LIST         = []
     CLEAN_EVENT_LIST   = []
 
-    PARSED_FILENAME = "PARSED" + sys.argv[1]
-
     # This will do most of the heavy lifting of stripping important data from the input file
     # and creating event objects
     def parseFile(self):
@@ -73,7 +71,12 @@ class Parser:
             if(any(identifier in line for identifier in self.EVENT_START_TIME) and eventFound):
                 # Strip date/time from string
                 time = re.sub('[^0-9]','',line)
-                tempStartTime = time[8:10]
+                # Fix for times earlier than 10 not appearing in the schedule
+                # due to indexing error
+                if(int(time[8:10]) < 10):
+                    tempStartTime = time[9:10]
+                else:
+                    tempStartTime = time[8:10]
                 continue
 
             # Get event end time
@@ -92,8 +95,10 @@ class Parser:
                 # Get frequency
                 if("FREQ=WEEKLY" in line):
                     tempFreq  = "WEEKLY"
+                    if("UNTIL=" not in line):
+                        tempRREND = -1
                     # Get datetime and convert into an int of the event
-                    if(any(identifier in line for identifier in self.RRULE_DAYS)):
+                    else:
                         temp = re.sub('[^0-9]','',line)[0:8:]
                         # Fixes int casting issue
                         if(temp != ''):
@@ -102,8 +107,10 @@ class Parser:
                             tempRREND = temp
                 elif("FREQ=DAILY" in line):
                     tempFreq  = "DAILY"
+                    if("UNTIL=" not in line):
+                        tempRREND = -1
                     # Get datetime and convert into an int of the event
-                    if(any(identifier in line for identifier in self.RRULE_DAYS)):
+                    else:
                         temp = re.sub('[^0-9]','',line)[0:8:]
                         # Fixes int casting issue
                         if(temp != ''):
@@ -165,13 +172,14 @@ class Parser:
                             ) + self.getDate(currentDateTime)
 
         for i,evnt in enumerate(self.EVENT_LIST):
-            # 20211201 is used for debugging should be the currentDateTime var
             if(currentDateInt <= evnt.rawDate):
                 self.CLEAN_EVENT_LIST.append(evnt)
             # If the event is 'older' than todays date
             elif(currentDateInt > evnt.rawDate):
                 # Check to see if the stopping date exists and is older than today as well
-                if(evnt.rruleEnd != '' and (20211201 <= evnt.rruleEnd)):
+                if(evnt.rruleEnd == -1):
+                    self.CLEAN_EVENT_LIST.append(evnt)
+                elif(evnt.rruleFreq == "WEEKLY" and evnt.rruleEnd > currentDateInt):
                     self.CLEAN_EVENT_LIST.append(evnt)
 
     # Takes in the current datetime and finds how far that day is from the previous sunday
