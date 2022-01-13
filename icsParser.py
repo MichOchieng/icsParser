@@ -1,6 +1,7 @@
-from os import times
 import sys
 import re
+import shutil
+import os
 from datetime import datetime
 
 class Event:
@@ -38,8 +39,6 @@ class Parser:
     EVENT_LIST         = []
     CLEAN_EVENT_LIST   = []
 
-    PARSED_FILENAME = "PARSED" + sys.argv[1]
-
     # This will do most of the heavy lifting of stripping important data from the input file
     # and creating event objects
     def parseFile(self):
@@ -72,7 +71,12 @@ class Parser:
             if(any(identifier in line for identifier in self.EVENT_START_TIME) and eventFound):
                 # Strip date/time from string
                 time = re.sub('[^0-9]','',line)
-                tempStartTime = time[8:10]
+                # Fix for times earlier than 10 not appearing in the schedule
+                # due to indexing error
+                if(int(time[8:10]) < 10):
+                    tempStartTime = time[9:10]
+                else:
+                    tempStartTime = time[8:10]
                 continue
 
             # Get event end time
@@ -91,8 +95,10 @@ class Parser:
                 # Get frequency
                 if("FREQ=WEEKLY" in line):
                     tempFreq  = "WEEKLY"
+                    if("UNTIL=" not in line):
+                        tempRREND = -1
                     # Get datetime and convert into an int of the event
-                    if(any(identifier in line for identifier in self.RRULE_DAYS)):
+                    else:
                         temp = re.sub('[^0-9]','',line)[0:8:]
                         # Fixes int casting issue
                         if(temp != ''):
@@ -101,8 +107,10 @@ class Parser:
                             tempRREND = temp
                 elif("FREQ=DAILY" in line):
                     tempFreq  = "DAILY"
+                    if("UNTIL=" not in line):
+                        tempRREND = -1
                     # Get datetime and convert into an int of the event
-                    if(any(identifier in line for identifier in self.RRULE_DAYS)):
+                    else:
                         temp = re.sub('[^0-9]','',line)[0:8:]
                         # Fixes int casting issue
                         if(temp != ''):
@@ -156,35 +164,60 @@ class Parser:
             # Otherwise just add to the new event list
 
         # Gets the current datetime then removes non-numeric values and saves the result as an integer value
-        currentDateTime = int(
+        currentDateTime = datetime.today()
+        currentDateInt  = int(
                                 re.sub(
                                         '[^0-9]','',datetime.today().strftime('%Y-%m-%d')
                                     )
-                            )
+                            ) + self.getDate(currentDateTime)
 
         for i,evnt in enumerate(self.EVENT_LIST):
-            # 20211201 is used for debugging should be the currentDateTime var
-            if(20211201 <= evnt.rawDate):
+            if(currentDateInt <= evnt.rawDate):
                 self.CLEAN_EVENT_LIST.append(evnt)
             # If the event is 'older' than todays date
-            elif(20211201 > evnt.rawDate):
+            elif(currentDateInt > evnt.rawDate):
                 # Check to see if the stopping date exists and is older than today as well
-                if(evnt.rruleEnd != '' and (20211201 <= evnt.rruleEnd)):
+                if(evnt.rruleEnd == -1):
                     self.CLEAN_EVENT_LIST.append(evnt)
+                elif(evnt.rruleFreq == "WEEKLY" and evnt.rruleEnd > currentDateInt):
+                    self.CLEAN_EVENT_LIST.append(evnt)
+
+    # Takes in the current datetime and finds how far that day is from the previous sunday
+    def getDate(self,datetime):
+        # Sunday = 6    Monday = 0
+        # Schedule week starts on sunday
+        # Depending on the current day a value is returned to subtract
+        # from the current datetime to get sundays datetime of the current week
+        if(datetime.weekday() == 6):
+            return 0
+        elif(datetime.weekday() == 0):
+            return -1
+        elif(datetime.weekday() == 1):
+            return -2
+        elif(datetime.weekday() == 2):
+            return -3
+        elif(datetime.weekday() == 3):
+            return -4
+        elif(datetime.weekday() == 4):
+            return -5
+        elif(datetime.weekday() == 5):
+            return -6
 
     # This will print the encapsulated events to a new file
     def printEvents(self):
         # Remove old events
         self.cleanList()
         try:
-            with open('PARSED' + self.fileName,'w',encoding='utf-8',errors='ignore') as file:
+            with open('parseFile.txt','w',encoding='utf-8',errors='ignore') as file:
                 sys.stdout = file
                 for i,evnt in enumerate(self.CLEAN_EVENT_LIST):
-                    print("-----EVENT " + str(i))
+                    print("-----EVENT " + str(i+1))
                     print(evnt.name)  
                     print(evnt.startTime)
                     print(evnt.rawDate)
                     print(evnt.rruleDay)
+                # Moves new parse file to the scripts folder
+                shutil.move("./parseFile.txt","./scripts/parseFile.txt")
         except OSError:
             print("Something went wrong writing to parse file!")
 p = Parser()
