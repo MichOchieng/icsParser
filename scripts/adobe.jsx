@@ -3,7 +3,7 @@
     var scheduleArray = initializeArray(7,24)
 
     // Open calendar file
-    var filePath = "~/Documents/cfur/adobeScripts/icsParser/scripts/timeTableTest.ai"; // Replace with correct path on your machine
+    var filePath = "~/Documents/cfur/adobeScripts/icsParser/scripts/timeTable.ai"; // Replace with correct path on your machine
     var file     = File(filePath);
     file.open('r');
     app.open(file);
