@@ -62,6 +62,10 @@ class Parser:
         tempRREND     = ''
         tempRRDAY     = ''
 
+        # Used to identify events that occur on multiple days in a week
+        multiDay      = False
+        multiDayLine  = ''
+
         for line in lines:
             # Find an Event
             if(line.replace('\n','') == self.EVENT_BLOCK_START): # Removing new line char at the end of each line
@@ -93,8 +97,6 @@ class Parser:
 
             # Get info on Recurance Rules
             if((self.RRULE in line) and eventFound):
-                # Get the day of the event
-                tempRRDAY = self.getRruleDay(line)
                 # Get frequency
                 if("FREQ=WEEKLY" in line):
                     tempFreq  = "WEEKLY"
@@ -108,6 +110,15 @@ class Parser:
                             tempRREND = int(temp)
                         else:
                             tempRREND = temp
+                    # Checks to see if the event occurs on multiple days of the week
+                    if("," in line):
+                        # Saves only everything after 'BYDAY=' into an array
+                        # ex ['MO','TU','WE']
+                        multiDayLine = line.split("BYDAY=")[1].split(",")
+                        multiDay     = True
+                    else:
+                        # Get the day of the event
+                        tempRRDAY = self.getRruleDay(line)
                 elif("FREQ=DAILY" in line):
                     tempFreq  = "DAILY"
                     # tempRRDAY would be null when events of daily reoccurance
@@ -128,17 +139,28 @@ class Parser:
 
             # Get event summary/name
             if(self.EVENT_SUMMARY in line and eventFound):
-                readingDesc = False # ! Might not need this anymore !
-                # tempSum = re.sub('[^a-zA-Z ]','',(line.replace(self.EVENT_SUMMARY,''))) will only display alphabetical characters and spaces
                 tempSum = (line.replace(self.EVENT_SUMMARY,'')).replace('\n','')
                 continue 
 
             if(self.EVENT_BLOCK_END in line and eventFound):
                 eventFound = False
-                # Create event object
-                temp = Event(tempSum,tempStartTime,tempEndTime,tempRawTime,tempRRDAY,tempFreq,tempRREND)
-                # Push event to list
-                self.EVENT_LIST.append(temp)
+                if(multiDay):
+                    # Add a new event to the list for each day found in the multiDayLine variable
+                    for i,dayX in enumerate(multiDayLine):
+                        for j,dayY in enumerate(self.RRULE_DAYS):
+                            if(dayX in dayY):
+                                # Create event object
+                                print(tempSum)
+                                print("DayX: " + dayX + " DayY: " + dayY)
+                                temp = Event(tempSum,tempStartTime,tempEndTime,tempRawTime,dayY,tempFreq,tempRREND)
+                                # Push event to list
+                                self.EVENT_LIST.append(temp)
+                    multiDay = False
+                else:
+                    # Create event object
+                    temp = Event(tempSum,tempStartTime,tempEndTime,tempRawTime,tempRRDAY,tempFreq,tempRREND)
+                    # Push event to list
+                    self.EVENT_LIST.append(temp)
                 continue   
 
     def getRruleDay(self,line):
