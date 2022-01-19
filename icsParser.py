@@ -115,7 +115,7 @@ class Parser:
                     dt        = datetime.strptime(str(tempRawTime)+ " 00:00:00",'%Y%m%d %H:%M:%S')
                     tempRRDAY = self.convertDay(dt.weekday())
                     if("UNTIL=" not in line):
-                        tempRREND = -1
+                        tempRREND = -2
                     # Get datetime and convert into an int of the event
                     else:
                         temp = re.sub('[^0-9]','',line)[0:8:]
@@ -204,6 +204,8 @@ class Parser:
                 # Check to see if the stopping date exists and is older than today as well
                 if(evnt.rruleEnd == -1):
                     self.CLEAN_EVENT_LIST.append(evnt)
+                elif(evnt.rruleEnd == -2): # Daily event
+                    self.CLEAN_EVENT_LIST.append(evnt)
                 elif(evnt.rruleFreq == "WEEKLY" and evnt.rruleEnd > currentDateInt):
                     self.CLEAN_EVENT_LIST.append(evnt)
 
@@ -246,6 +248,8 @@ class Parser:
                     file.write("\n") 
                     file.write(str(evnt.rruleDay))
                     file.write("\n") 
+                    file.write(str(evnt.rruleEnd))
+                    file.write("\n")
         else:
             try:
                 with open('parseFile.txt','w',encoding='utf-8',errors='ignore') as file:
@@ -256,6 +260,7 @@ class Parser:
                         print(evnt.startTime)
                         print(evnt.rawDate)
                         print(evnt.rruleDay)
+                        print(evnt.rruleEnd)
                     # Moves new parse file to the scripts folder
                     shutil.move("./parseFile.txt","./scripts/parseFile.txt")
             except OSError:
