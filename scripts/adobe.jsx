@@ -85,6 +85,7 @@
         //  2  - Event Start time
         //  3  - Events date
         //  4  - Event day
+        //  5  - Recurrance identifier (-1: Weekly, -2: Daily)
 
         var tempName;
         var tempStartTime;
