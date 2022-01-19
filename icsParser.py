@@ -113,8 +113,9 @@ class Parser:
                     # Checks to see if the event occurs on multiple days of the week
                     if("," in line):
                         # Saves only everything after 'BYDAY=' into an array
-                        # ex ['MO','TU','WE']
-                        multiDayLine = line.split("BYDAY=")[1].split(",")
+                        # ex ['MO','TU','WE']a
+                        # Must strip 'line' to get rid of newlines in the last element of the array
+                        multiDayLine = line.strip().split("BYDAY=")[1].split(",")
                         multiDay     = True
                     else:
                         # Get the day of the event
@@ -146,12 +147,10 @@ class Parser:
                 eventFound = False
                 if(multiDay):
                     # Add a new event to the list for each day found in the multiDayLine variable
-                    for i,dayX in enumerate(multiDayLine):
-                        for j,dayY in enumerate(self.RRULE_DAYS):
+                    for dayX in multiDayLine:
+                        for dayY in self.RRULE_DAYS:
                             if(dayX in dayY):
                                 # Create event object
-                                print(tempSum)
-                                print("DayX: " + dayX + " DayY: " + dayY)
                                 temp = Event(tempSum,tempStartTime,tempEndTime,tempRawTime,dayY,tempFreq,tempRREND)
                                 # Push event to list
                                 self.EVENT_LIST.append(temp)
