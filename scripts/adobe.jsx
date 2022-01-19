@@ -92,20 +92,31 @@
 
         for (var index = 0; index < fileContents.length; index++) {
             // Check for Event name (index % 5 = 1)
-            if (index % 5 == 1){
+            if (index % 6 == 1){
                 tempName = fileContents[index]
             }
 
             // Check for Event startTime (index % 5 = 2)
-            if (index % 5 == 2) {
+            if (index % 6 == 2) {
                 tempStartTime = fileContents[index]
             }
 
             // Check for Event Day (index % 5 = 4)
-            if (index % 5 == 4) {
+            if (index % 6 == 4) {
                 tempDay = convertDay(fileContents[index])
+            }
+            if (index % 6 == 5) {
                 // Add Name to correct positon in array
-                scheduleArray[tempDay][tempStartTime] = tempName;
+                if (fileContents[index] == -2) {
+                    // For daily events add in a loop
+                    for (var i = 0; i < 7; i++) {
+                        scheduleArray[i][tempStartTime] = tempName;
+                    }
+                }
+                // Regular events
+                else{
+                    scheduleArray[tempDay][tempStartTime] = tempName;
+                }
             }
         }
     }
