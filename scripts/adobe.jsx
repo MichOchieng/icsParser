@@ -12,7 +12,7 @@
     fillEventArray();
     fillSchedule();
     // Save PNG of Schedule
-    // myDoc.exportFile(File('testSchedule.png'),ExportType.PNG24);
+    app.exportFile(File('schedule.png'),ExportType.PNG24);
 
 
 // ----------- Functions -----------
@@ -42,14 +42,13 @@
                 }
         
                 txtFrame.contents = eventName; // DONT FORGET 's' AT THE END OF CONTENTS!!!
-                txtRange.size     = 4.2;
+                // If the eventName string is longer than 20 characters decrease the strings size to 3.5pts otherwise keep at 6pts
+                txtRange.size     = ((eventName.length <= 20) ? 6 : 3.5 );
                 txtFrame.position = [
-                    (posX + (i*offsetX)), // Offsets used to place in the correct row
-                    (posY - (j*offSetY))  // Subtracting from posY due to flipped values
+                    // Inline if fixes positioning on thursdays
+                    ((i == 4) ? (posX + ((i * 1.01) * offsetX)) : (posX + (i * offsetX))), // Offsets used to place in the correct row
+                    (posY - (j * offSetY))  // Subtracting from posY due to flipped values
                 ];   
-                // Center align text in frame
-                // Must go after setting position otherwise wont work
-                // txtRange.justification = Justification.CENTER;
             }
         }
     }
