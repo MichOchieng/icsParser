@@ -1,7 +1,7 @@
 import sys
 import re
 import shutil
-import os
+import os.path
 from datetime import datetime
 
 class Event:
@@ -60,6 +60,11 @@ class Parser:
         tempRawTime   = ''
         tempFreq      = ''
         tempRREND     = ''
+        tempRRDAY     = ''
+
+        # Used to identify events that occur on multiple days in a week
+        multiDay      = False
+        multiDayLine  = ''
 
         for line in lines:
             # Find an Event
@@ -71,12 +76,14 @@ class Parser:
             if(any(identifier in line for identifier in self.EVENT_START_TIME) and eventFound):
                 # Strip date/time from string
                 time = re.sub('[^0-9]','',line)
-                # Fix for times earlier than 10 not appearing in the schedule
-                # due to indexing error
-                if(int(time[8:10]) < 10):
-                    tempStartTime = time[9:10]
-                else:
-                    tempStartTime = time[8:10]
+                # Check to see if time is in the correct format
+                if(int(time) > 20000000000000): 
+                    # Fix for times earlier than 10 not appearing in the schedule
+                    # due to indexing error
+                    if(int(time[8:10]) < 10):
+                        tempStartTime = time[9:10]
+                    else:
+                        tempStartTime = time[8:10]
                 continue
 
             # Get event end time
@@ -90,8 +97,6 @@ class Parser:
 
             # Get info on Recurance Rules
             if((self.RRULE in line) and eventFound):
-                # Get the day of the event
-                tempRRDAY = self.getRruleDay(line)
                 # Get frequency
                 if("FREQ=WEEKLY" in line):
                     tempFreq  = "WEEKLY"
@@ -105,10 +110,24 @@ class Parser:
                             tempRREND = int(temp)
                         else:
                             tempRREND = temp
+                    # Checks to see if the event occurs on multiple days of the week
+                    if("," in line):
+                        # Saves only everything after 'BYDAY=' into an array
+                        # ex ['MO','TU','WE']a
+                        # Must strip 'line' to get rid of newlines in the last element of the array
+                        multiDayLine = line.strip().split("BYDAY=")[1].split(",")
+                        multiDay     = True
+                    else:
+                        # Get the day of the event
+                        tempRRDAY = self.getRruleDay(line)
                 elif("FREQ=DAILY" in line):
                     tempFreq  = "DAILY"
+                    # tempRRDAY would be null when events of daily reoccurance
+                    # this will use the rawTime variable to calculate what week day the event repeats on
+                    dt        = datetime.strptime(str(tempRawTime)+ " 00:00:00",'%Y%m%d %H:%M:%S')
+                    tempRRDAY = self.convertDay(dt.weekday())
                     if("UNTIL=" not in line):
-                        tempRREND = -1
+                        tempRREND = -2
                     # Get datetime and convert into an int of the event
                     else:
                         temp = re.sub('[^0-9]','',line)[0:8:]
@@ -121,17 +140,26 @@ class Parser:
 
             # Get event summary/name
             if(self.EVENT_SUMMARY in line and eventFound):
-                readingDesc = False # ! Might not need this anymore !
-                # tempSum = re.sub('[^a-zA-Z ]','',(line.replace(self.EVENT_SUMMARY,''))) will only display alphabetical characters and spaces
                 tempSum = (line.replace(self.EVENT_SUMMARY,'')).replace('\n','')
                 continue 
 
             if(self.EVENT_BLOCK_END in line and eventFound):
                 eventFound = False
-                # Create event object
-                temp = Event(tempSum,tempStartTime,tempEndTime,tempRawTime,tempRRDAY,tempFreq,tempRREND)
-                # Push event to list
-                self.EVENT_LIST.append(temp)
+                if(multiDay):
+                    # Add a new event to the list for each day found in the multiDayLine variable
+                    for dayX in multiDayLine:
+                        for dayY in self.RRULE_DAYS:
+                            if(dayX in dayY):
+                                # Create event object
+                                temp = Event(tempSum,tempStartTime,tempEndTime,tempRawTime,dayY,tempFreq,tempRREND)
+                                # Push event to list
+                                self.EVENT_LIST.append(temp)
+                    multiDay = False
+                else:
+                    # Create event object
+                    temp = Event(tempSum,tempStartTime,tempEndTime,tempRawTime,tempRRDAY,tempFreq,tempRREND)
+                    # Push event to list
+                    self.EVENT_LIST.append(temp)
                 continue   
 
     def getRruleDay(self,line):
@@ -151,6 +179,24 @@ class Parser:
         elif re.search(r'\b' + "BYDAY=SU"+ r'\b',line):
             return "BYDAY=SU"
     
+    # Used to find what day of the week Daily events start on by converting a datetime to one of the 
+    # return values bellow
+    def convertDay(self,val):
+        if (val == 0):
+            return "BYDAY=MO"
+        elif (val == 1):
+            return "BYDAY=TU"
+        elif (val == 2):
+            return "BYDAY=WE"
+        elif (val == 3):
+            return "BYDAY=TH"
+        elif (val == 4):
+            return "BYDAY=FR"
+        elif (val == 5):
+            return "BYDAY=SA"
+        elif (val == 6):
+            return "BYDAY=SU"
+
     # This will create a new event list with only newer events
     def cleanList(self):
         # Loop through EVENT_LIST
@@ -178,6 +224,8 @@ class Parser:
             elif(currentDateInt > evnt.rawDate):
                 # Check to see if the stopping date exists and is older than today as well
                 if(evnt.rruleEnd == -1):
+                    self.CLEAN_EVENT_LIST.append(evnt)
+                elif(evnt.rruleEnd == -2): # Daily event
                     self.CLEAN_EVENT_LIST.append(evnt)
                 elif(evnt.rruleFreq == "WEEKLY" and evnt.rruleEnd > currentDateInt):
                     self.CLEAN_EVENT_LIST.append(evnt)
@@ -207,19 +255,37 @@ class Parser:
     def printEvents(self):
         # Remove old events
         self.cleanList()
-        try:
-            with open('parseFile.txt','w',encoding='utf-8',errors='ignore') as file:
+        if(os.path.isfile("./scripts/parseFile.txt")):
+            with open('./scripts/parseFile.txt','a',encoding='utf-8',errors='ignore') as file:
                 sys.stdout = file
                 for i,evnt in enumerate(self.CLEAN_EVENT_LIST):
-                    print("-----EVENT " + str(i+1))
-                    print(evnt.name)  
-                    print(evnt.startTime)
-                    print(evnt.rawDate)
-                    print(evnt.rruleDay)
-                # Moves new parse file to the scripts folder
-                shutil.move("./parseFile.txt","./scripts/parseFile.txt")
-        except OSError:
-            print("Something went wrong writing to parse file!")
+                    file.write("-----EVENT " + str(i+1))
+                    file.write("\n") 
+                    file.write(evnt.name) 
+                    file.write("\n")
+                    file.write(evnt.startTime)
+                    file.write("\n") 
+                    file.write(str(evnt.rawDate))
+                    file.write("\n") 
+                    file.write(str(evnt.rruleDay))
+                    file.write("\n") 
+                    file.write(str(evnt.rruleEnd))
+                    file.write("\n")
+        else:
+            try:
+                with open('parseFile.txt','w',encoding='utf-8',errors='ignore') as file:
+                    sys.stdout = file
+                    for i,evnt in enumerate(self.CLEAN_EVENT_LIST):
+                        print("-----EVENT " + str(i+1))
+                        print(evnt.name)  
+                        print(evnt.startTime)
+                        print(evnt.rawDate)
+                        print(evnt.rruleDay)
+                        print(evnt.rruleEnd)
+                    # Moves new parse file to the scripts folder
+                    shutil.move("./parseFile.txt","./scripts/parseFile.txt")
+            except OSError:
+                print("Something went wrong writing to parse file!")
 p = Parser()
 p.parseFile()
 p.printEvents()
