@@ -12,7 +12,7 @@
     fillEventArray();
     fillSchedule();
     // Save PNG of Schedule
-    app.exportFile(File('schedule.png'),ExportType.PNG24);
+    // app.exportFile(File('schedule.png'),ExportType.PNG24);
 
 
 // ----------- Functions -----------
