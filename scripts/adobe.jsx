@@ -1,9 +1,10 @@
 // ----------- Main Contents -----------
 
     var scheduleArray = initializeArray(7,24)
+    var currentDir = new File($.fileName)
 
     // Open calendar file
-    var filePath = "~/Documents/cfur/adobeScripts/icsParser/scripts/timeTable.ai"; // Replace with correct path on your machine
+    var filePath = (currentDir.path + "/timeTable.ai"); // Replace with correct path on your machine
     var file     = File(filePath);
     file.open('r');
     app.open(file);
