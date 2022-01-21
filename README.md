@@ -19,6 +19,8 @@ This class handles parsing incoming text files and printing the parsed data to a
     * This function is used to create a new 'clean' event list that excludes past events that have been saved to the event list that's used to hold all events saved from the parseFile function.
 - getDate
     * This function uses the current days datetime to get the date of the most recent sunday in the current week.
+- convertDay
+    * Used to find what day of the week Daily events start on by converting a datetime to one of the
 - printEvents
     * This Function will create a new file and print Events from the earleir mentioned Event list to said file.
 
@@ -29,21 +31,24 @@ my@comp: python icsParser.py <fileToBeParsed>.txt
 ```
 - Example of output parse file
 ```console
------EVENT 1
-CFUR Alternative Playlist
-0
-20140625
-BYDAY=MO
------EVENT 2
-CFUR Festive Retrospection Playlist
-16
-20160312
-BYDAY=MO
------EVENT 3
-CFUR Dance Playlist
-2
-20160507
-BYDAY=MO
+-----EVENT 113
+Throwback Funk & Soul
+19
+20220120
+BYDAY=TH
+-1
+-----EVENT 114
+Folk Traditions
+10
+20210909
+BYDAY=TH
+20220120
+-----EVENT 115
+Folk Traditions (Roots)
+10
+20220120
+BYDAY=TH
+-1
 ```
 ### Generating schedule from parse file
 *   In illustrator goto the 'file' tab, select 'scripts' then 'other scritps' and select the adobe.jsx file. This will run the script and generate a version of the schedule below.
@@ -52,10 +57,12 @@ BYDAY=MO
 
 ## Notes
 - The file to be parsed must be in the same directory as this python file.
-- More detail on the functions can be find in the comments.
+- More detail on the functions can be found in the comments.
 
-## Future Fixes
-- Text alignment in cells
-- Varying text size depending on length of the string
+## Fixes/Additions
+- ~~Text alignment in cells~~
+- ~~Varying text size depending on length of the string~~
 - Increasing text range stroke width to increase visability
+- Automatically get ics file names from the working directory instead of entering manually
+- Exporting to PDF once schedule is created
 
