@@ -1,7 +1,10 @@
+import pathlib
 import sys
 import re
 import shutil
-import os.path
+import os
+from os       import walk
+from pathlib  import Path
 from datetime import datetime
 
 class Event:
@@ -18,6 +21,12 @@ class Event:
         self.rruleDay     = rruleDay
 
 class Parser:
+
+    def __init__(self):
+        # Initialize FILE_LIST and run parser
+        self.getFiles()
+        self.run()
+
     fileName = ""
 
     # Constants used for identifying calendar event attributes
@@ -39,16 +48,25 @@ class Parser:
     EVENT_LIST         = []
     CLEAN_EVENT_LIST   = []
 
+    FILE_LIST          = []
+
+    # Will find ics files in the current directory and populate the FILE_LIST array
+    def getFiles(self):
+        path = pathlib.Path(__file__).parent.resolve()
+        for f in next(walk(path), (None, None, []))[2]:
+            if f.endswith('.ics'):
+                self.FILE_LIST.append(f)
+                print("Found file: " + f)
+
     # This will do most of the heavy lifting of stripping important data from the input file
     # and creating event objects
-    def parseFile(self):
-        self.fileName = sys.argv[1]
+    def parseFile(self,inputFile):
         # Takes in file as a command line argument
         try: 
-            with open(self.fileName,"r",encoding='utf-8',errors='ignore') as file:
+            with open(inputFile,"r",encoding='utf-8',errors='ignore') as file:
                 lines = file.readlines()
         except OSError:
-            print("Could not open file " + self.fileName + ".")
+            print("Could not open file " + inputFile + ".")
             sys.exit()
 
         eventFound  = False
@@ -286,6 +304,9 @@ class Parser:
                     shutil.move("./parseFile.txt","./scripts/parseFile.txt")
             except OSError:
                 print("Something went wrong writing to parse file!")
+
+    def run(self):
+        for file in self.FILE_LIST:
+            self.parseFile(file)
 p = Parser()
-p.parseFile()
 p.printEvents()

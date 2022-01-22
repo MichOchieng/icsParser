@@ -1,5 +1,5 @@
-# Google Calendar to Adobe Illustrator Schedule Parser
-This program takes in a google calendar (ics) file, parses the file and prints the output into the CFUR playlist schedule in adobe illustrator.
+# Google Calendar to Adobe Illustrator Schedule Converter
+This program finds all google calendar (ics) files in the working directory, parses the files and prints the output into the CFUR playlist schedule in adobe illustrator.
 
 ## Classes
 ### Event
@@ -23,6 +23,8 @@ This class handles parsing incoming text files and printing the parsed data to a
     * Used to find what day of the week Daily events start on by converting a datetime to one of the
 - printEvents
     * This Function will create a new file and print Events from the earleir mentioned Event list to said file.
+- getFiles
+    * This will find all the files in the current directory (in this case the icsParser directory) with the .ics file extension
 
 ## Example 
 ### Creating a parse file for adobe illustrator
@@ -56,13 +58,13 @@ BYDAY=TH
 ![output](public/scheduleSS.png)
 
 ## Notes
-- The file to be parsed must be in the same directory as this python file.
+- The files to be parsed must be in the same directory as the python file otherwise they wont be found.
 - More detail on the functions can be found in the comments.
 
 ## Fixes/Additions
 - ~~Text alignment in cells~~
 - ~~Varying text size depending on length of the string~~
 - Increasing text range stroke width to increase visability
-- Automatically get ics file names from the working directory instead of entering manually
+- ~~Automatically get ics file names from the working directory instead of entering manually~~
 - Exporting to PDF once schedule is created
 
