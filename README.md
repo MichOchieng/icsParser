@@ -58,7 +58,7 @@ BYDAY=TH
 ![output](public/scheduleSS.png)
 
 ## Notes
-- The file to be parsed must be in the same directory as this python file.
+- The files to be parsed must be in the same directory as the python file otherwise they wont be found.
 - More detail on the functions can be found in the comments.
 
 ## Fixes/Additions
