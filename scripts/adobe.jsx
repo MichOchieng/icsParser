@@ -1,19 +1,29 @@
 // ----------- Main Contents -----------
 
-    var scheduleArray = initializeArray(7,24)
-    var currentDir = new File($.fileName)
+    var scheduleArray = initializeArray(7,24);
+    var currentDir    = new File($.fileName);
 
     // Open calendar file
     var filePath = (currentDir.path + "/timeTable.ai"); // Replace with correct path on your machine
     var file     = File(filePath);
+
+    // Export options
+    var exprt       = new ExportOptionsPNG24();
+    var type        = ExportType.PNG24;
+    var schedulePNG = new File(currentDir.path + "/newSchedule");
+    exprt.antiAliasing = true;
+    exprt.transparency = false;
+    exprt.saveAsHTML   = true;
+
     file.open('r');
     app.open(file);
 
     // Add text to calendar file
     fillEventArray();
     fillSchedule();
+
     // Save PNG of Schedule
-    // app.exportFile(File('schedule.png'),ExportType.PNG24);
+    app.activeDocument.exportFile(schedulePNG,type,exprt);
 
 
 // ----------- Functions -----------
