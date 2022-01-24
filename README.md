@@ -29,7 +29,7 @@ This class handles parsing incoming text files and printing the parsed data to a
 ## Example 
 ### Creating a parse file for adobe illustrator
 ```console
-my@comp: python icsParser.py
+my@comp: python3 icsParser.py
 ```
 - Example of output parse file
 ```console
@@ -56,15 +56,17 @@ BYDAY=TH
 *   In illustrator goto the 'file' tab, select 'scripts' then 'other scritps' and select the adobe.jsx file. This will run the script and generate a version of the schedule below.
 
 ![output](public/scheduleSS.png)
+*   A PNG of the schedule will be saved in the scripts folder.
 
 ## Notes
 - The files to be parsed must be in the same directory as the python file otherwise they wont be found.
 - More detail on the functions can be found in the comments.
+- Should be ran using python 3.x
 
 ## Fixes/Additions
 - ~~Text alignment in cells~~
 - ~~Varying text size depending on length of the string~~
-- Increasing text range stroke width to increase visability
+- ~~Increasing text range stroke width to increase visability~~
 - ~~Automatically get ics file names from the working directory instead of entering manually~~
-- Exporting to PDF once schedule is created
+- ~~Exporting to PDF once schedule is created~~
 
