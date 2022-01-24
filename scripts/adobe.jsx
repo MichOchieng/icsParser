@@ -34,6 +34,11 @@
                 
                 var eventName;
 
+                var black = new RGBColor();
+                black.red   = 0;
+                black.green = 0;
+                black.blue  = 0;
+
                 // Need to check for null and undefined values otherwise error 1238 will be thrown
                 if (scheduleArray[i][j] != null) {
                     eventName = scheduleArray[i][j];
@@ -44,7 +49,9 @@
         
                 txtFrame.contents = eventName; // DONT FORGET 's' AT THE END OF CONTENTS!!!
                 // If the eventName string is longer than 20 characters decrease the strings size to 3.5pts otherwise keep at 6pts
-                txtRange.size     = ((eventName.length <= 20) ? 6 : 3.5 );
+                txtRange.size         = ((eventName.length <= 20) ? 6 : 3.5 );
+                txtRange.strokeColor  = black;
+                txtRange.strokeWeight = 0.2;
                 txtFrame.position = [
                     // Inline if fixes positioning on thursdays
                     ((i == 4) ? (posX + ((i * 1.01) * offsetX)) : (posX + (i * offsetX))), // Offsets used to place in the correct row
