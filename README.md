@@ -29,7 +29,7 @@ This class handles parsing incoming text files and printing the parsed data to a
 ## Example 
 ### Creating a parse file for adobe illustrator
 ```console
-my@comp: python icsParser.py <fileToBeParsed>.txt
+my@comp: python icsParser.py
 ```
 - Example of output parse file
 ```console
