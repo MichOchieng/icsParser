@@ -29,7 +29,7 @@ This class handles parsing incoming text files and printing the parsed data to a
 ## Example 
 ### Creating a parse file for adobe illustrator
 ```console
-my@comp: python icsParser.py
+my@comp: python3 icsParser.py
 ```
 - Example of output parse file
 ```console
@@ -60,6 +60,7 @@ BYDAY=TH
 ## Notes
 - The files to be parsed must be in the same directory as the python file otherwise they wont be found.
 - More detail on the functions can be found in the comments.
+- Should be ran using python 3.x
 
 ## Fixes/Additions
 - ~~Text alignment in cells~~
