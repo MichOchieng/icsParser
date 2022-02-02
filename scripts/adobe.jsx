@@ -51,7 +51,12 @@
 
                 // Need to check for null and undefined values otherwise error 1238 will be thrown
                 if (scheduleArray[i][j] != null) {
-                    eventName = scheduleArray[i][j];
+                    if(j == 8){ // Bandaid fix for talking radical radio replacing BBC world service
+                        eventName = "BBC World Service";
+                    }
+                    else{
+                        eventName = scheduleArray[i][j];
+                    }
                 } 
                 else{
                     eventName = ""
