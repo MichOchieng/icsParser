@@ -25,6 +25,8 @@ This class handles parsing incoming text files and printing the parsed data to a
     * This Function will create a new file and print Events from the earleir mentioned Event list to said file.
 - getFiles
     * This will find all the files in the current directory (in this case the icsParser directory) with the .ics file extension
+- stripGenre
+    * Strips genre tags (anything inside and including brackets) from all of the event titles 
 
 ## Example 
 ### Creating a parse file for adobe illustrator

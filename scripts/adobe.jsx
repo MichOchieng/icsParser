@@ -51,22 +51,43 @@
 
                 // Need to check for null and undefined values otherwise error 1238 will be thrown
                 if (scheduleArray[i][j] != null) {
-                    eventName = scheduleArray[i][j];
+                    if(j == 8){ // Bandaid fix for talking radical radio replacing BBC world service
+                        eventName = "BBC World Service";
+                    }
+                    else{
+                        eventName = scheduleArray[i][j];
+                    }
                 } 
                 else{
                     eventName = ""
                 }
         
-                txtFrame.contents = eventName; // DONT FORGET 's' AT THE END OF CONTENTS!!!
+                txtFrame.contents = stripGenre(eventName);
                 // If the eventName string is longer than 20 characters decrease the strings size to 3.5pts otherwise keep at 6pts
-                txtRange.size         = ((eventName.length <= 20) ? 6 : 3.5 );
+                txtRange.size         = fontSizing(txtFrame.contents.length);
                 txtRange.strokeColor  = black;
                 txtRange.strokeWeight = 0.2;
-                txtFrame.position = [
-                    // Inline if fixes positioning on thursdays
-                    ((i == 4) ? (posX + ((i * 1.01) * offsetX)) : (posX + (i * offsetX))), // Offsets used to place in the correct row
-                    (posY - (j * offSetY))  // Subtracting from posY due to flipped values
-                ];   
+                txtRange.textFont     = textFonts[0] // Sets all event names to absender font
+                
+                // Change text positioning to fix offset in thursday and saturday rows
+                if (i == 4) {
+                    txtFrame.position = [
+                        (posX + ((i * 1.01) * offsetX)), // Offsets used to place in the correct row
+                        (posY - (j * offSetY))           // Subtracting from posY due to flipped values
+                    ];   
+                }
+                else if (i == 6) {
+                    txtFrame.position = [
+                        (posX + ((i * 0.99) * offsetX)), // Offsets used to place in the correct row
+                        (posY - (j * offSetY))           // Subtracting from posY due to flipped values
+                    ];  
+                }
+                else {
+                    txtFrame.position = [
+                        (posX + (i * offsetX)), // Offsets used to place in the correct row
+                        (posY - (j * offSetY))  // Subtracting from posY due to flipped values
+                    ];    
+                }
             }
         }
     }
@@ -159,5 +180,24 @@
                 return 0
             default:
                 alert("Something went wrong coverting dates into indexes.")
+        }
+    }
+
+    function stripGenre(string){
+        var newString = string.replace(/\(.*?)/,'')
+        return newString
+    }
+
+    function fontSizing(length){
+        switch (true) {
+            case (length <= 20) :
+                return 6
+            case (length > 20 && length <= 30):
+                return 4.2
+            case (length > 30):
+                return 3.5
+            default:
+                alert("Something went wrong sizing text font!")
+                return 0
         }
     }
