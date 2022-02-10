@@ -57,7 +57,7 @@ BYDAY=TH
 ### Generating schedule from parse file
 *   In illustrator goto the 'file' tab, select 'scripts' then 'other scritps' and select the adobe.jsx file. This will run the script and generate a version of the schedule below.
 
-![output](public/scheduleSS.png)
+![output](public/timeTable.jpg)
 *   A PNG of the schedule will be saved in the scripts folder.
 
 ## Notes
