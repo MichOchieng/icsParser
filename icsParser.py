@@ -50,8 +50,11 @@ class Parser:
 
     FILE_LIST          = []
 
+    BASE_PATH = os.path.dirname(os.path.abspath(__file__))
+
     # Will find ics files in the current directory and populate the FILE_LIST array
     def getFiles(self):
+        print("Searching for ics files...")
         path = pathlib.Path(__file__).parent.resolve()
         for f in next(walk(path), (None, None, []))[2]:
             if f.endswith('.ics'):
@@ -63,10 +66,10 @@ class Parser:
     def parseFile(self,inputFile):
         # Takes in file as a command line argument
         try: 
-            with open(inputFile,"r",encoding='utf-8',errors='ignore') as file:
+            with open((self.BASE_PATH + "/" + inputFile),"r",encoding='utf-8',errors='ignore') as file:
                 lines = file.readlines()
         except OSError:
-            print("Could not open file " + inputFile + ".")
+            print("Could not open file " + (self.BASE_PATH + inputFile) + ".")
             sys.exit()
 
         eventFound  = False
@@ -273,8 +276,15 @@ class Parser:
     def printEvents(self):
         # Remove old events
         self.cleanList()
-        if(os.path.isfile("./scripts/parseFile.txt")):
-            with open('./scripts/parseFile.txt','a',encoding='utf-8',errors='ignore') as file:
+
+        # File Paths
+        scriptsFolder = "/scripts"
+        parseFile     = "/parseFile.txt"
+
+
+        if(os.path.isfile(self.BASE_PATH + scriptsFolder + parseFile)):
+            print("Parse file exists")
+            with open(self.BASE_PATH + scriptsFolder + parseFile,'a',encoding='utf-8',errors='ignore') as file:
                 sys.stdout = file
                 for i,evnt in enumerate(self.CLEAN_EVENT_LIST):
                     file.write("-----EVENT " + str(i+1))
@@ -290,8 +300,9 @@ class Parser:
                     file.write(str(evnt.rruleEnd))
                     file.write("\n")
         else:
+            print("Parse file does not exist")
             try:
-                with open('parseFile.txt','w',encoding='utf-8',errors='ignore') as file:
+                with open(self.BASE_PATH + parseFile,'w',encoding='utf-8',errors='ignore') as file:
                     sys.stdout = file
                     for i,evnt in enumerate(self.CLEAN_EVENT_LIST):
                         print("-----EVENT " + str(i+1))
@@ -301,7 +312,7 @@ class Parser:
                         print(evnt.rruleDay)
                         print(evnt.rruleEnd)
                     # Moves new parse file to the scripts folder
-                    shutil.move("./parseFile.txt","./scripts/parseFile.txt")
+                    shutil.move(self.BASE_PATH + parseFile,self.BASE_PATH + scriptsFolder + parseFile)
             except OSError:
                 print("Something went wrong writing to parse file!")
 

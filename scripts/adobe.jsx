@@ -1,5 +1,5 @@
 // ----------- Main Contents -----------
-
+    
     var scheduleArray = initializeArray(7,24);
     var currentDir    = new File($.fileName);
 
@@ -67,7 +67,7 @@
                 txtRange.size         = fontSizing(txtFrame.contents.length);
                 txtRange.strokeColor  = black;
                 txtRange.strokeWeight = 0.2;
-                txtRange.textFont     = textFonts[0] // Sets all event names to absender font
+                txtRange.textFont     = textFonts[278] // Sets all event names to futura bold font
                 
                 // Change text positioning to fix offset in thursday and saturday rows
                 if (i == 4) {
@@ -101,9 +101,11 @@
     }
 
     function fillEventArray(){
+        var currentDir    = new File($.fileName);
+        var parseFilePath = (currentDir.path + "/parseFile.txt");
         // Open up incoming file
         try {
-            var file = File('~/Documents/cfur/adobeScripts/icsParser/scripts/parseFile.txt');
+            var file = File(parseFilePath);
             file.open('r');
             var fileContents = file.read();
             fileContents = fileContents.split("\n"); // Makes indexing a lot easier by creating substrings
@@ -190,12 +192,14 @@
 
     function fontSizing(length){
         switch (true) {
-            case (length <= 20) :
-                return 6
-            case (length > 20 && length <= 30):
-                return 4.2
-            case (length > 30):
-                return 3.5
+            case (length > 0 && length < 15):
+                return 5.5
+            case (length <= 20):
+                return 4.7
+            case (length > 20 && length < 27):
+                return 4
+            case (length >= 27):
+                return 3
             default:
                 alert("Something went wrong sizing text font!")
                 return 0
