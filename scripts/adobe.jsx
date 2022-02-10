@@ -1,5 +1,5 @@
 // ----------- Main Contents -----------
-
+    
     var scheduleArray = initializeArray(7,24);
     var currentDir    = new File($.fileName);
 
@@ -101,9 +101,11 @@
     }
 
     function fillEventArray(){
+        var currentDir    = new File($.fileName);
+        var parseFilePath = (currentDir.path + "/parseFile.txt");
         // Open up incoming file
         try {
-            var file = File('~/Documents/cfur/adobeScripts/icsParser/scripts/parseFile.txt');
+            var file = File(parseFilePath);
             file.open('r');
             var fileContents = file.read();
             fileContents = fileContents.split("\n"); // Makes indexing a lot easier by creating substrings
