@@ -192,12 +192,14 @@
 
     function fontSizing(length){
         switch (true) {
-            case (length <= 20) :
-                return 6
-            case (length > 20 && length <= 30):
-                return 4.2
-            case (length > 30):
-                return 3.5
+            case (length > 0 && length < 15):
+                return 5.5
+            case (length <= 20):
+                return 4.7
+            case (length > 20 && length < 27):
+                return 4
+            case (length >= 27):
+                return 3
             default:
                 alert("Something went wrong sizing text font!")
                 return 0
