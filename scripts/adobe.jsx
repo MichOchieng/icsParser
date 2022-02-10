@@ -67,7 +67,7 @@
                 txtRange.size         = fontSizing(txtFrame.contents.length);
                 txtRange.strokeColor  = black;
                 txtRange.strokeWeight = 0.2;
-                txtRange.textFont     = textFonts[0] // Sets all event names to absender font
+                txtRange.textFont     = textFonts[278] // Sets all event names to futura bold font
                 
                 // Change text positioning to fix offset in thursday and saturday rows
                 if (i == 4) {
