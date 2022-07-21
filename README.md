@@ -1,4 +1,4 @@
-# Google Calendar to Adobe Illustrator Schedule Converter
+# ICS File Parser
 This program finds all google calendar (ics) files in the working directory, parses the files and prints the output into the CFUR playlist schedule in adobe illustrator.
 
 ## Classes
